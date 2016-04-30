@@ -1,8 +1,12 @@
 // audio level meter
 // 2 x 9 LED
 // main.h (file 1 of 2)
-// compiler: "HI-TECH C PRO for the PIC18 MCU Family  V9.63PL3"
+//
+// Compiler: "HI-TECH C PRO for the PIC18 MCU Family  V9.63PL3"
+////    Program space    used   6A0h (  1696) of  2000h bytes   ( 20.7%)//    Data space       used    20h (    32) of   200h bytes   (  6.3%)//    EEPROM space     used     8h (     8) of   100h bytes   (  3.1%)
+//
 // 2016
+
 
 
 #define _XTAL_FREQ 8000000

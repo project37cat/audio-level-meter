@@ -29,7 +29,7 @@ void led_con(uint8_t num, uint8_t color)  //color: 2==RED, 1==GREEN
 		case 15: if(color==2) { C1LD6_RED; } else if(color==1) { C1LD6_GRN; } break;
 		case 16: if(color==2) { C1LD7_RED; } else if(color==1) { C1LD7_GRN; } break;
 		case 17: if(color==2) { C1LD8_RED; } else if(color==1) { C1LD8_GRN; } break;
-		}	
+		}
 	}
 
 
@@ -38,12 +38,15 @@ void interrupt handler(void)
 	{
 	if(LVDIF && LVDIE)  //********************  low-voltage detect interrupt  *********************
 		{
-		GIE=0; //disable all interrupts
 		LED_ALL_OFF; //all leds turn off
 		LEDM_OFF;
 		TL431_OFF;
-		if(EEPROM_READ(OPMOD_ADDR) != opmod) EEPROM_WRITE(OPMOD_ADDR,opmod);  //save setting
-		LEDM_RED;
+		if(EEPROM_READ(OPMOD_ADDR) != opmod)  //save setting
+			{
+			EEPROM_WRITE(OPMOD_ADDR,opmod);
+			C0LD8_RED;
+			}
+		  else { C0LD8_GRN; }
 		while(1);
 		}
 		
@@ -59,20 +62,18 @@ void interrupt handler(void)
 		
 		LEDM_OFF;
 		
-		if(muxcnt & 0b00000011)  {  if(opmod!=2 && opmod!=5) { LEDM_GRN; }  }		
+		if(muxcnt & 0b00000011)  {  if(opmod!=2 && opmod!=5) { LEDM_GRN; }  }
 		  else  {  if(opmod!=0 && opmod!=3) { LEDM_RED; }  }
 		  
 		LED_ALL_OFF;
 		
-		if(muxcnt==0 && msrun==0)  { buff0=chan[0]; buff1=chan[1]; }  //if new loop, get ADC results
+		if(muxcnt==0)  { buff0=chan[0]; buff1=chan[1]; }  //if new loop, get ADC results
 		
 		if(muxcnt>8) { buff0=buff1; tmp=(muxcnt-9); } else { tmp=muxcnt; }  //if the second column
 		
 		if(buff0>=levels[opmod][tmp])  led_con(muxcnt, colors[opmod][tmp]);  //led control
 		
-		if(muxcnt==17 && msrun==0) msrun=1;  //if end of loop, run the measurement
-		
-		if(++muxcnt>17) muxcnt=0;
+		if(++muxcnt>17) { muxcnt=0; msrun=1; }
 		
 		///////////////////////////////////////  Button  //////////////////////////////////////////
 		static uint8_t buthold=0;
